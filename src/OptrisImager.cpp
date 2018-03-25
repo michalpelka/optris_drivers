@@ -5,7 +5,8 @@ namespace optris_drivers
 
 OptrisImager::OptrisImager(evo::IRDeviceUVC* dev, evo::IRDeviceParams params)
 {
-  _imager.init(&params, dev->getFrequency(), dev->getWidth(), dev->getHeight());
+
+  _imager.init(&params, dev->getFrequency(), dev->getWidth(), dev->getHeight(), true);
   _imager.setClient(this);
 
   _bufferRaw = new unsigned char[_imager.getRawBufferSize()];
@@ -59,10 +60,20 @@ OptrisImager::~OptrisImager()
 
 void OptrisImager::run()
 {
-  _dev->startStreaming();
-
+  int retval =_dev->startStreaming();
+  if (retval != evo::IRIMAGER_SUCCESS)
+  {
+	  printf("cannnot startStreaming :%d", retval);
+	  abort();
+  }
   ros::NodeHandle n;
-  ros::Timer timer = n.createTimer(ros::Duration(1.0/_imager.getMaxFramerate()), &OptrisImager::onTimer, this);
+  float fr = _imager.getMaxFramerate();
+  if (fr == 0)
+   {
+ 	  printf("framerate = 0");
+ 	  abort();
+   }
+  ros::Timer timer = n.createTimer(ros::Duration(1.0/fr), &OptrisImager::onTimer, this);
   ros::spin();
 
   _dev->stopStreaming();
@@ -152,5 +163,12 @@ bool OptrisImager::onSetTemperatureRange(TemperatureRange::Request &req, Tempera
 
   return true;
 }
+
+void OptrisImager::onProcessExit(void* arg)
+{
+	printf("onProcessExit");
+}
+
+
 
 }

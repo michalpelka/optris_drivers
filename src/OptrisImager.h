@@ -94,6 +94,8 @@ public:
    */
   bool onForceFlag(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
 
+  void onProcessExit(void* arg);
+
   /**
    * ROS service callback
    */

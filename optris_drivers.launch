@@ -1,7 +1,7 @@
 <launch>
 <group ns="optris">
 
-  <arg name="serial_nr" default="14080045"/>
+  <arg name="serial_nr" default="17112045"/>
 
   <node name="optris_imager_node" pkg="optris_drivers" type="optris_imager_node" output="screen">
     <!-- Set configuration file of your camera here! -->  
